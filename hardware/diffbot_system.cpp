@@ -42,6 +42,8 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
   cfg_.device = info_.hardware_parameters["device"];
   cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
   cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
+  cfg_.left_wheel_id = std::stoi(info_.hardware_parameters["left_wheel_id"]);
+  cfg_.right_wheel_id = std::stoi(info_.hardware_parameters["right_wheel_id"]);
   cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
   if (info_.hardware_parameters.count("pid_p") > 0)
   {
@@ -56,8 +58,8 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
   }
   
 
-  wheel_l_.setup(cfg_.left_wheel_name, cfg_.enc_counts_per_rev);
-  wheel_r_.setup(cfg_.right_wheel_name, cfg_.enc_counts_per_rev);
+  wheel_l_.setup(cfg_.left_wheel_name, cfg_.enc_counts_per_rev, cfg_.left_wheel_id);
+  wheel_r_.setup(cfg_.right_wheel_name, cfg_.enc_counts_per_rev, cfg_.right_wheel_id);
 
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -146,11 +148,11 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Configuring ...please wait...");
-  if (comms_.connected())
+  if (commsDDSM_.connected())
   {
-    comms_.disconnect();
+    commsDDSM_.disconnect();
   }
-  comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
+  commsDDSM_.connect(cfg_.device, cfg_.timeout_ms);
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -160,9 +162,9 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Cleaning up ...please wait...");
-  if (comms_.connected())
+  if (commsDDSM_.connected())
   {
-    comms_.disconnect();
+    commsDDSM_.disconnect();
   }
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully cleaned up!");
 
@@ -174,14 +176,17 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Activating ...please wait...");
-  if (!comms_.connected())
+  if (!commsDDSM_.connected())
   {
     return hardware_interface::CallbackReturn::ERROR;
   }
-  if (cfg_.pid_p > 0)
-  {
-    comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
-  }
+  commsDDSM_.set_ddsm115_mode(wheel_l_.id, VELOCITY_LOOP);
+  commsDDSM_.set_ddsm115_mode(wheel_r_.id, VELOCITY_LOOP);
+
+  //commsDDSM_.get_ddsm115_mode(1);
+  //commsDDSM_.set_ddsm115_velocity(1, 2, 3);
+  //commsDDSM_.set_ddsm115_brakes(1);
+  
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -191,6 +196,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Deactivating ...please wait...");
+  
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully deactivated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -199,22 +205,34 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_deactivate(
 hardware_interface::return_type DiffDriveArduinoHardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
-  if (!comms_.connected())
+  if (!commsDDSM_.connected())
   {
     return hardware_interface::return_type::ERROR;
   }
 
-  comms_.read_encoder_values(wheel_l_.enc, wheel_r_.enc);
+  commsDDSM_.get_ddsm115_mode(wheel_l_.id);
+  wheel_l_.pos = wheel_l_.degrees_to_radians(commsDDSM_.responseData.angle);
+  wheel_l_.vel = wheel_l_.rpm_to_rad_per_sec(commsDDSM_.responseData.velocity);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WL Position is: %f", wheel_l_.pos);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WL Velocity is: %f", wheel_l_.vel);
 
-  double delta_seconds = period.seconds();
+  commsDDSM_.get_ddsm115_mode(wheel_r_.id);
+  wheel_r_.pos = wheel_r_.degrees_to_radians(commsDDSM_.responseData.angle);
+  wheel_r_.vel = wheel_r_.rpm_to_rad_per_sec(commsDDSM_.responseData.velocity);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WR Position is: %f", wheel_r_.pos);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WR Velocity is: %f", wheel_r_.vel);
 
-  double pos_prev = wheel_l_.pos;
-  wheel_l_.pos = wheel_l_.calc_enc_angle();
-  wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
 
-  pos_prev = wheel_r_.pos;
-  wheel_r_.pos = wheel_r_.calc_enc_angle();
-  wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
+
+  // double delta_seconds = period.seconds();
+
+  // double pos_prev = wheel_l_.pos;
+  // wheel_l_.pos = wheel_l_.calc_enc_angle();
+  // wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
+
+  // pos_prev = wheel_r_.pos;
+  // wheel_r_.pos = wheel_r_.calc_enc_angle();
+  // wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
 
   return hardware_interface::return_type::OK;
 }
@@ -222,14 +240,17 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
 hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  if (!comms_.connected())
+  if (!commsDDSM_.connected())
   {
     return hardware_interface::return_type::ERROR;
   }
+  commsDDSM_.set_ddsm115_velocity(wheel_l_.id, -wheel_l_.cmd, 3);
+  commsDDSM_.set_ddsm115_velocity(wheel_r_.id, wheel_r_.cmd, 3);
 
-  int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
-  int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
-  comms_.set_motor_values(motor_l_counts_per_loop, motor_r_counts_per_loop);
+  // int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
+  // int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
+  // commsDDSM_.set_motor_values(motor_l_counts_per_loop, motor_r_counts_per_loop);
+
   return hardware_interface::return_type::OK;
 }
 

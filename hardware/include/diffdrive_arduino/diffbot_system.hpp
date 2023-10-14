@@ -33,6 +33,7 @@
 
 #include "diffdrive_arduino/arduino_comms.hpp"
 #include "diffdrive_arduino/wheel.hpp"
+#include "diffdrive_arduino/ddsm115_comms.hpp"
 
 namespace diffdrive_arduino
 {
@@ -47,6 +48,8 @@ struct Config
   std::string device = "";
   int baud_rate = 0;
   int timeout_ms = 0;
+  int left_wheel_id = 0;
+  int right_wheel_id = 2;
   int enc_counts_per_rev = 0;
   int pid_p = 0;
   int pid_d = 0;
@@ -95,7 +98,8 @@ public:
 
 private:
 
-  ArduinoComms comms_;
+  // ArduinoComms comms_;
+  DDSM115Comms commsDDSM_;
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;
