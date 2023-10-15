@@ -244,8 +244,8 @@ hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::wr
   {
     return hardware_interface::return_type::ERROR;
   }
-  commsDDSM_.set_ddsm115_velocity(wheel_l_.id, -wheel_l_.cmd, 3);
-  commsDDSM_.set_ddsm115_velocity(wheel_r_.id, wheel_r_.cmd, 3);
+  commsDDSM_.set_ddsm115_velocity(wheel_l_.id, wheel_l_.cmd, 3);
+  commsDDSM_.set_ddsm115_velocity(wheel_r_.id, -wheel_r_.cmd, 3);
 
   // int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
   // int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
