@@ -3,17 +3,17 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffdrive_robot">
   <xacro:arg name="prefix" default="" />
 
-  <xacro:include filename="$(find diffdrive_arduino)/urdf/inertial_macros.xacro"/>
+  <xacro:include filename="$(find diffdrive_ddsm115)/urdf/inertial_macros.xacro"/>
 
-  <xacro:include filename="$(find diffdrive_arduino)/urdf/diffbot_description.urdf.xacro" />
+  <xacro:include filename="$(find diffdrive_ddsm115)/urdf/diffbot_description.urdf.xacro" />
 
-  <xacro:include filename="$(find diffdrive_arduino)/urdf/lidar.xacro" />
+  <xacro:include filename="$(find diffdrive_ddsm115)/urdf/lidar.xacro" />
 
   <!-- Import Rviz colors -->
-  <xacro:include filename="$(find diffdrive_arduino)/urdf/diffbot.materials.xacro" />
+  <xacro:include filename="$(find diffdrive_ddsm115)/urdf/diffbot.materials.xacro" />
 
   <!-- Import diffbot ros2_control description -->
-  <xacro:include filename="$(find diffdrive_arduino)/ros2_control/diffbot.ros2_control.xacro" />
+  <xacro:include filename="$(find diffdrive_ddsm115)/ros2_control/diffbot.ros2_control.xacro" />
 
   <xacro:diffbot prefix="$(arg prefix)" />
 
