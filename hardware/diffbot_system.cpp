@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "diffdrive_arduino/diffbot_system.hpp"
+#include "diffdrive_ddsm115/diffbot_system.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -23,9 +23,9 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-namespace diffdrive_arduino
+namespace diffdrive_ddsm115
 {
-hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
+hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
   const hardware_interface::HardwareInfo & info)
 {
   if (
@@ -54,7 +54,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
   }
   else
   {
-    RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "PID values not supplied, using defaults.");
+    RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "PID values not supplied, using defaults.");
   }
   
 
@@ -68,7 +68,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     if (joint.command_interfaces.size() != 1)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("DiffDriveArduinoHardware"),
+        rclcpp::get_logger("DiffDriveDDSM115Hardware"),
         "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
         joint.command_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
@@ -77,7 +77,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("DiffDriveArduinoHardware"),
+        rclcpp::get_logger("DiffDriveDDSM115Hardware"),
         "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
         joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
@@ -86,7 +86,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     if (joint.state_interfaces.size() != 2)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("DiffDriveArduinoHardware"),
+        rclcpp::get_logger("DiffDriveDDSM115Hardware"),
         "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
         joint.state_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
@@ -95,7 +95,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("DiffDriveArduinoHardware"),
+        rclcpp::get_logger("DiffDriveDDSM115Hardware"),
         "Joint '%s' have '%s' as first state interface. '%s' expected.", joint.name.c_str(),
         joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
       return hardware_interface::CallbackReturn::ERROR;
@@ -104,7 +104,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("DiffDriveArduinoHardware"),
+        rclcpp::get_logger("DiffDriveDDSM115Hardware"),
         "Joint '%s' have '%s' as second state interface. '%s' expected.", joint.name.c_str(),
         joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
@@ -114,7 +114,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> DiffDriveArduinoHardware::export_state_interfaces()
+std::vector<hardware_interface::StateInterface> DiffDriveDDSM115Hardware::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
@@ -131,7 +131,7 @@ std::vector<hardware_interface::StateInterface> DiffDriveArduinoHardware::export
   return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface> DiffDriveArduinoHardware::export_command_interfaces()
+std::vector<hardware_interface::CommandInterface> DiffDriveDDSM115Hardware::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
@@ -144,38 +144,38 @@ std::vector<hardware_interface::CommandInterface> DiffDriveArduinoHardware::expo
   return command_interfaces;
 }
 
-hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_configure(
+hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Configuring ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Configuring ...please wait...");
   if (commsDDSM_.connected())
   {
     commsDDSM_.disconnect();
   }
   commsDDSM_.connect(cfg_.device, cfg_.timeout_ms);
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully configured!");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_cleanup(
+hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Cleaning up ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Cleaning up ...please wait...");
   if (commsDDSM_.connected())
   {
     commsDDSM_.disconnect();
   }
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully cleaned up!");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully cleaned up!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 
-hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_activate(
+hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Activating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Activating ...please wait...");
   if (!commsDDSM_.connected())
   {
     return hardware_interface::CallbackReturn::ERROR;
@@ -187,22 +187,22 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_activate(
   //commsDDSM_.set_ddsm115_velocity(1, 2, 3);
   //commsDDSM_.set_ddsm115_brakes(1);
   
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully activated!");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_deactivate(
+hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Deactivating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Deactivating ...please wait...");
   
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully deactivated!");
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully deactivated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type DiffDriveArduinoHardware::read(
+hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   if (!commsDDSM_.connected())
@@ -213,14 +213,14 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
   commsDDSM_.get_ddsm115_mode(wheel_l_.id);
   wheel_l_.pos = wheel_l_.degrees_to_radians(commsDDSM_.responseData.angle);
   wheel_l_.vel = wheel_l_.rpm_to_rad_per_sec(commsDDSM_.responseData.velocity);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WL Position is: %f", wheel_l_.pos);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WL Velocity is: %f", wheel_l_.vel);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position is: %f", wheel_l_.pos);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Velocity is: %f", wheel_l_.vel);
 
   commsDDSM_.get_ddsm115_mode(wheel_r_.id);
   wheel_r_.pos = wheel_r_.degrees_to_radians(commsDDSM_.responseData.angle);
   wheel_r_.vel = wheel_r_.rpm_to_rad_per_sec(commsDDSM_.responseData.velocity);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WR Position is: %f", wheel_r_.pos);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "WR Velocity is: %f", wheel_r_.vel);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WR Position is: %f", wheel_r_.pos);
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WR Velocity is: %f", wheel_r_.vel);
 
 
 
@@ -237,7 +237,7 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::write(
+hardware_interface::return_type diffdrive_ddsm115 ::DiffDriveDDSM115Hardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   if (!commsDDSM_.connected())
@@ -254,8 +254,8 @@ hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::wr
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace diffdrive_arduino
+}  // namespace diffdrive_ddsm115
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-  diffdrive_arduino::DiffDriveArduinoHardware, hardware_interface::SystemInterface)
+  diffdrive_ddsm115::DiffDriveDDSM115Hardware, hardware_interface::SystemInterface)

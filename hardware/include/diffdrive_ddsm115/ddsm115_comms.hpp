@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_ARDUINO_DDSM115_COMMS_HPP
-#define DIFFDRIVE_ARDUINO_DDSM115_COMMS_HPP
+#ifndef DIFFDRIVE_DDSM115_COMMS_HPP
+#define DIFFDRIVE_DDSM115_COMMS_HPP
 
 #include <sstream>
 #include <libserial/SerialPort.h>
