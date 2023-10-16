@@ -38,28 +38,14 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
 
   cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
   cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
-  cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
   cfg_.device = info_.hardware_parameters["device"];
   cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
   cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
   cfg_.left_wheel_id = std::stoi(info_.hardware_parameters["left_wheel_id"]);
   cfg_.right_wheel_id = std::stoi(info_.hardware_parameters["right_wheel_id"]);
-  cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
-  if (info_.hardware_parameters.count("pid_p") > 0)
-  {
-    cfg_.pid_p = std::stoi(info_.hardware_parameters["pid_p"]);
-    cfg_.pid_d = std::stoi(info_.hardware_parameters["pid_d"]);
-    cfg_.pid_i = std::stoi(info_.hardware_parameters["pid_i"]);
-    cfg_.pid_o = std::stoi(info_.hardware_parameters["pid_o"]);
-  }
-  else
-  {
-    RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "PID values not supplied, using defaults.");
-  }
-  
 
-  wheel_l_.setup(cfg_.left_wheel_name, cfg_.enc_counts_per_rev, cfg_.left_wheel_id);
-  wheel_r_.setup(cfg_.right_wheel_name, cfg_.enc_counts_per_rev, cfg_.right_wheel_id);
+  wheel_l_.setup(cfg_.left_wheel_name, cfg_.left_wheel_id);
+  wheel_r_.setup(cfg_.right_wheel_name, cfg_.right_wheel_id);
 
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -223,17 +209,6 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WR Velocity is: %f", wheel_r_.vel);
 
 
-
-  // double delta_seconds = period.seconds();
-
-  // double pos_prev = wheel_l_.pos;
-  // wheel_l_.pos = wheel_l_.calc_enc_angle();
-  // wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
-
-  // pos_prev = wheel_r_.pos;
-  // wheel_r_.pos = wheel_r_.calc_enc_angle();
-  // wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
-
   return hardware_interface::return_type::OK;
 }
 
@@ -246,10 +221,6 @@ hardware_interface::return_type diffdrive_ddsm115 ::DiffDriveDDSM115Hardware::wr
   }
   commsDDSM_.set_ddsm115_velocity(wheel_l_.id, wheel_l_.cmd, 3);
   commsDDSM_.set_ddsm115_velocity(wheel_r_.id, -wheel_r_.cmd, 3);
-
-  // int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
-  // int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
-  // commsDDSM_.set_motor_values(motor_l_counts_per_loop, motor_r_counts_per_loop);
 
   return hardware_interface::return_type::OK;
 }
