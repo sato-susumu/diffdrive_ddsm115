@@ -21,14 +21,14 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="${base_length} ${base_width} ${base_height}"/>
+        <box size="${base_width} ${base_length} ${base_height}"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
       <geometry>
-        <box size="${base_length} ${base_width} ${base_height}"/>
+        <box size="${base_width} ${base_length} ${base_height}"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -56,53 +56,22 @@
     <joint name="${prefix}left_wheel_joint" type="continuous">
       <parent link="${prefix}base_link"/>
       <child link="${prefix}left_wheel"/>
-      <origin xyz="0 ${base_width/2} 0" rpy="-${PI/2} 0 0"/>
-      <axis xyz="0 0 1"/>
-      <dynamics damping="0.0"/>
+      <origin xyz="0 -${base_width/2} ${z_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.2"/>
     </joint>
 
     <!-- left wheel Link -->
     <link name="${prefix}left_wheel">
       <collision>
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
-        </geometry>
-      </collision>
-
-      <visual>
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
-        </geometry>
-        <material name="black"/>
-      </visual>
-
-      <inertial>
         <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
-        <mass value="${wheel_mass}"/>
-        <inertia
-          ixx="${wheel_mass / 12.0 * (3*wheel_radius + wheel_len*wheel_len)}" ixy="0.0" ixz="0.0"
-          iyy="${wheel_mass / 12.0 * wheel_radius*wheel_radius}" iyz="0.0"
-          izz="${wheel_mass / 12.0 * wheel_radius*wheel_radius}"/>
-      </inertial>
-    </link>
-
-    <joint name="${prefix}right_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link"/>
-      <child link="${prefix}right_wheel"/>
-      <origin xyz="0 ${-base_width/2} 0" rpy="${PI/2} 0 0"/>
-      <axis xyz="0 0 -1"/>
-      <dynamics damping="0.0"/>
-    </joint>
-
-    <!-- right wheel Link -->
-    <link name="${prefix}right_wheel">
-      <collision>
         <geometry>
           <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
         </geometry>
       </collision>
 
       <visual>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
         <geometry>
           <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
         </geometry>
@@ -119,22 +88,91 @@
         </inertial>
       </link>
 
-
-    <joint name="${prefix}caster_rear_wheel_joint" type="fixed">
+    <joint name="${prefix}right_wheel_joint" type="continuous">
       <parent link="${prefix}base_link"/>
-      <child link="${prefix}caster_rear_wheel"/>
-      <origin xyz="${-base_width/2 + caster_wheel_radius} 0 0" rpy="0 0 0"/>
+      <child link="${prefix}right_wheel"/>
+      <origin xyz="0 ${base_width/2} ${z_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.2"/>
     </joint>
 
-    <!-- caster rear wheel Link -->
-    <link name="${prefix}caster_rear_wheel">
+    <!-- right wheel Link -->
+    <link name="${prefix}right_wheel">
       <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia
+          ixx="${wheel_mass / 12.0 * (3*wheel_radius + wheel_len*wheel_len)}" ixy="0.0" ixz="0.0"
+          iyy="${wheel_mass / 12.0 * wheel_radius*wheel_radius}" iyz="0.0"
+          izz="${wheel_mass / 12.0 * wheel_radius*wheel_radius}"/>
+        </inertial>
+      </link>
+
+    <joint name="${prefix}caster_frontal_wheel_joint" type="fixed">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}caster_frontal_wheel"/>
+      <origin xyz="${base_width/2 - caster_wheel_radius} 0 ${z_offset}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- caster frontal wheel Link -->
+    <link name="${prefix}caster_frontal_wheel">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <sphere radius="${caster_wheel_radius}"/>
         </geometry>
       </collision>
 
       <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="${caster_wheel_radius}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${caster_wheel_mass}"/>
+        <inertia
+          ixx="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" ixy="0.0" ixz="0.0"
+          iyy="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" iyz="0.0"
+          izz="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"/>
+        </inertial>
+      </link>
+
+    <joint name="${prefix}caster_rear_wheel_joint" type="fixed">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}caster_rear_wheel"/>
+      <origin xyz="${-base_width/2 + caster_wheel_radius} 0 ${z_offset}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- caster rear wheel Link -->
+    <link name="${prefix}caster_rear_wheel">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="${caster_wheel_radius}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <sphere radius="${caster_wheel_radius}"/>
         </geometry>
