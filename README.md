@@ -14,6 +14,11 @@ In another terminal on the computer with the controller.
 - `source install/setup.bash`
 - `ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox' joy_vel:=/diffbot_base_controller/cmd_vel_unstamped`
 
+To run SLAM_Toolbox, run the following in a terminal
+- `ros2 launch slam_toolbox online_async_launch.py params_file:=/home/bot/dev_bot/src/diffdrive_ddsm115/bringup/config/mapper_params_online_async.yaml use_sim_time:=false`
+
+
+
 
 # Motors used
 [Waveshare DDSM115](https://www.waveshare.com/wiki/DDSM115)
