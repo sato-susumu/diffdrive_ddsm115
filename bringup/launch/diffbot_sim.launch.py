@@ -39,7 +39,7 @@ def generate_launch_description():
     
 
 
-    diff_drive_spawner = Node(
+    diffbot_base_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["diffbot_base_controller"],
@@ -58,6 +58,6 @@ def generate_launch_description():
         rsp,
         gazebo,
         spawn_entity,
-        diff_drive_spawner,
+        diffbot_base_controller_spawner,
         joint_broad_spawner
     ])
