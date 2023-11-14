@@ -39,6 +39,17 @@ class Wheel
         return rpm * 0.10472;
     }
 
+    // Custom function to check the sign of a value
+    int check_sign(double value) {
+        if (value > 0.0) {
+            return 1; // Positive
+        } else if (value < 0.0) {
+            return -1; // Negative
+        } else {
+            return 0; // Zero
+        }
+    }
+
 };
 
 
