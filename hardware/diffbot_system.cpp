@@ -167,7 +167,12 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_activate(
     return hardware_interface::CallbackReturn::ERROR;
   }
   commsDDSM_.set_ddsm115_mode(wheel_l_.id, VELOCITY_LOOP);
+  commsDDSM_.get_ddsm115_mode(wheel_l_.id);
+  wheel_l_.pos = commsDDSM_.responseData.angle;
+
   commsDDSM_.set_ddsm115_mode(wheel_r_.id, VELOCITY_LOOP);
+  commsDDSM_.get_ddsm115_mode(wheel_r_.id);
+  wheel_r_.pos = commsDDSM_.responseData.angle;
 
   //commsDDSM_.get_ddsm115_mode(1);
   //commsDDSM_.set_ddsm115_velocity(1, 2, 3);
