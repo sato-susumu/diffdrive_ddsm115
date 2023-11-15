@@ -201,11 +201,14 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   double wheel_vel = commsDDSM_.responseData.velocity;
   double wheel_dir = wheel_l_.check_sign(wheel_dir);
 
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Now is: %f", wheel_pos);
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Previous is: %f", wheel_l_.pos);
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Direction is: %f", wheel_dir);
+
   
   wheel_l_.pos = wheel_l_.degrees_to_radians(wheel_l_.pos + (wheel_pos * wheel_dir));
   wheel_l_.vel = wheel_l_.rpm_to_rad_per_sec(wheel_vel);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position is: %f", wheel_l_.pos);
-  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Velocity is: %f", wheel_l_.vel);
+  
 
   
   commsDDSM_.get_ddsm115_mode(wheel_r_.id);
