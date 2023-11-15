@@ -13,6 +13,7 @@ class Wheel
     int id = 0;
     double cmd = 0;
     double pos = 0;
+    double pos_rads = 0;
     double vel = 0;
     double accumulated_pos = 0;
 

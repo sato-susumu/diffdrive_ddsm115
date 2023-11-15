@@ -105,12 +105,12 @@ std::vector<hardware_interface::StateInterface> DiffDriveDDSM115Hardware::export
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
   state_interfaces.emplace_back(hardware_interface::StateInterface(
-    wheel_l_.name, hardware_interface::HW_IF_POSITION, &wheel_l_.pos));
+    wheel_l_.name, hardware_interface::HW_IF_POSITION, &wheel_l_.pos_rads));
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     wheel_l_.name, hardware_interface::HW_IF_VELOCITY, &wheel_l_.vel));
 
   state_interfaces.emplace_back(hardware_interface::StateInterface(
-    wheel_r_.name, hardware_interface::HW_IF_POSITION, &wheel_r_.pos));
+    wheel_r_.name, hardware_interface::HW_IF_POSITION, &wheel_r_.pos_rads));
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     wheel_r_.name, hardware_interface::HW_IF_VELOCITY, &wheel_r_.vel));
 
@@ -206,11 +206,13 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   double wheel_vel = commsDDSM_.responseData.velocity;
   
 
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Now is: %f", wheel_pos);
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Accumulated Pos is: %f", wheel_l_.calculate_accumulated_position(wheel_pos) );
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Now (angle) is: %f", wheel_pos);
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Now (rads) is: %f", wheel_l_.degrees_to_radians(wheel_pos) );
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Accumulated (angle) is: %f", wheel_l_.calculate_accumulated_position(wheel_pos) );
 
   
-  // wheel_l_.pos = wheel_l_.degrees_to_radians(wheel_l_.pos + (wheel_pos * wheel_dir));
+  wheel_l_.pos_rads = wheel_l_.degrees_to_radians(wheel_l_.accumulated_pos);
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Accumulated (rads) is: %f", wheel_l_.pos_rads );
   wheel_l_.vel = wheel_l_.rpm_to_rad_per_sec(wheel_vel);
   
 
