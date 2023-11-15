@@ -14,6 +14,7 @@ class Wheel
     double cmd = 0;
     double pos = 0;
     double vel = 0;
+    double accumulated_pos = 0;
 
     Wheel() = default;
 
@@ -39,15 +40,24 @@ class Wheel
         return rpm * 0.10472;
     }
 
-    // Custom function to check the sign of a value
-    int check_sign(double value) {
-        if (value > 0.0) {
-            return 1; // Positive
-        } else if (value < 0.0) {
-            return -1; // Negative
-        } else {
-            return 0; // Zero
-        }
+    double calculate_accumulated_position(double current_pos) 
+    {
+      int change = pos - current_pos;
+
+      // Detect direction
+      if (change > 180) {
+        change -= 360;
+      } else if (change < -180) {
+        change += 360;
+      }
+
+      // Add the change to the accumulated position
+      accumulated_pos += change;
+
+      // Update pos to current pos
+      pos = current_pos;
+
+      return accumulated_pos;
     }
 
 };
