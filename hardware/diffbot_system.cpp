@@ -202,7 +202,7 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   
 
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Position Now is: %f", wheel_pos);
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Accumulated Pos is: %f", calculate_accumulated_position(wheel_pos) );
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WL Accumulated Pos is: %f", wheel_l_.calculate_accumulated_position(wheel_pos) );
 
   
   // wheel_l_.pos = wheel_l_.degrees_to_radians(wheel_l_.pos + (wheel_pos * wheel_dir));
