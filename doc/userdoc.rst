@@ -1,5 +1,10 @@
 .. _ros2_control_demos_example_2_userdoc:
 
+*CLI Commands*
+ros2 launch slam_toolbox online_async_launch.py params_file:=src/diffdrive_ddsm115/bringup/config/mapper_params_online_async.yaml use_sim_time:=true
+ros2 launch nav2_bringup navigation_launch.py use_sim_time:=true
+
+
 *********
 DiffBot
 *********
