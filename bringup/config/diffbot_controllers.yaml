@@ -37,29 +37,28 @@ diffbot_base_controller:
     # enable_odom_tf: x
 
     # cmd_vel_timeout: x
-    # publish_limited_velocity: x
+    publish_limited_velocity: x
     # velocity_rolling_window_size: x
     
 
-    # linear.x.has_velocity_limits: false
-    # linear.x.has_acceleration_limits: false
-    # linear.x.has_jerk_limits: false
-    # linear.x.max_velocity: NAN
-    # linear.x.min_velocity: NAN
-    # linear.x.max_acceleration: NAN
-    # linear.x.min_acceleration: NAN
-    # linear.x.max_jerk: NAN
-    # linear.x.min_jerk: NAN
+    linear.x.has_velocity_limits: true
+    linear.x.has_acceleration_limits: true
+    linear.x.has_jerk_limits: false
+    linear.x.max_velocity: 0.03 # m/s
+    # linear.x.min_velocity: -0.1 # m/s
+    linear.x.max_acceleration: 0.02 # m/s^2
+    linear.x.max_jerk: 0.0 # m/s^3
+    linear.x.min_jerk: 0.0
 
-    # angular.z.has_velocity_limits: false
-    # angular.z.has_acceleration_limits: false
-    # angular.z.has_jerk_limits: false
-    # angular.z.max_velocity: NAN
-    # angular.z.min_velocity: NAN
-    # angular.z.max_acceleration: NAN
-    # angular.z.min_acceleration: NAN
-    # angular.z.max_jerk: NAN
-    # angular.z.min_jerk: NAN
+    angular.z.has_velocity_limits: true
+    angular.z.has_acceleration_limits: true
+    angular.z.has_jerk_limits: false
+    angular.z.max_velocity: 0.04 # rad/s
+    # angular.z.min_velocity: -5.0
+    angular.z.max_acceleration: 0.03 # rad/s^2
+    angular.z.min_acceleration: -0.5 # rad/s^2
+    angular.z.max_jerk: 0.0 # rad/s^3
+    angular.z.min_jerk: 0.0 # rad/s^3
 
 
 
