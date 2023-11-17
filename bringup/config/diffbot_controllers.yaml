@@ -37,7 +37,7 @@ diffbot_base_controller:
     # enable_odom_tf: x
 
     # cmd_vel_timeout: x
-    publish_limited_velocity: x
+    publish_limited_velocity: true
     # velocity_rolling_window_size: x
     
 
