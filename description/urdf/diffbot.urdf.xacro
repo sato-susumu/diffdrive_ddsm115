@@ -10,6 +10,7 @@
   <!-- <xacro:include filename="$(find diffdrive_ddsm115)/urdf/diffbot_description.urdf.xacro" /> -->
   <xacro:include filename="robot_core.xacro" />
 
+  <xacro:include filename="$(find diffdrive_ddsm115)/urdf/imu.xacro" />
   <xacro:include filename="$(find diffdrive_ddsm115)/urdf/lidar.xacro" />
 
   <!-- Import Rviz colors -->

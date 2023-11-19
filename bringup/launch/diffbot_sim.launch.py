@@ -67,6 +67,21 @@ def generate_launch_description():
             parameters=[twist_mux_params],
             remappings=[('/cmd_vel_out','/diffbot_base_controller/cmd_vel_unstamped')]
         )
+    
+    robot_localization_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[os.path.join(get_package_share_directory(package_name),'config', 'ekf.yaml'), {'use_sim_time': True}]
+    )
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen'
+    )
 
 
 
@@ -78,5 +93,6 @@ def generate_launch_description():
         gazebo,
         spawn_entity,
         diffbot_base_controller_spawner,
-        joint_broad_spawner
+        joint_broad_spawner,
+        robot_localization_node,
     ])
