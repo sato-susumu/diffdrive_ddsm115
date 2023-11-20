@@ -47,6 +47,8 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
   wheel_l_.setup(cfg_.left_wheel_name, cfg_.left_wheel_id);
   wheel_r_.setup(cfg_.right_wheel_name, cfg_.right_wheel_id);
 
+  imu_.setup("imu", 1);
+
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
   {
@@ -95,6 +97,16 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
         joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
     }
+  }
+
+  // ..
+  // check Imu state interfaces
+  if (info_.sensors[0].state_interfaces.size() != 10)
+  {
+    RCLCPP_FATAL(
+      rclcpp::get_logger("UnitreeHardware"),
+      "Sensor[0] (should be IMU) has %zu state interfaces. 10 expected.", info_.sensors[0].state_interfaces.size());
+    return hardware_interface::CallbackReturn::ERROR;
   }
 
   return hardware_interface::CallbackReturn::SUCCESS;
