@@ -281,7 +281,13 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   {
     return hardware_interface::return_type::ERROR;
   }
-  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "IMU data: %s", mcuComms_.get_imu_all_data().c_str() );
+  std::string imu_response = mcuComms_.get_imu_all_data().c_str();
+  if (!imu_.string_to_values(imu_response))
+  {
+    return hardware_interface::return_type::ERROR;
+  }
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "IMU data - orientation_y: %f", imu_.orientation_y );
+  // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "IMU data: %s", mcuComms_.get_imu_all_data().c_str() );
   // mcuComms_.get_imu_all_data();
 
 
