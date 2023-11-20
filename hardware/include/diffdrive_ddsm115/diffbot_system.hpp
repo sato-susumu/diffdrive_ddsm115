@@ -32,6 +32,7 @@
 #include "diffdrive_ddsm115/visibility_control.h"
 
 #include "diffdrive_ddsm115/wheel.hpp"
+#include "diffdrive_ddsm115/imu.hpp"
 #include "diffdrive_ddsm115/ddsm115_comms.hpp"
 
 namespace diffdrive_ddsm115
@@ -48,6 +49,7 @@ struct Config
   int timeout_ms = 0;
   int left_wheel_id = 0;
   int right_wheel_id = 2;
+  int imu_id = 1;
 };
 
 
@@ -94,6 +96,7 @@ private:
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;
+  IMU imu_;
 };
 
 }  // namespace diffdrive_ddsm115

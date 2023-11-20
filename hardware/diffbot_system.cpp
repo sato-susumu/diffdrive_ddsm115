@@ -114,6 +114,10 @@ std::vector<hardware_interface::StateInterface> DiffDriveDDSM115Hardware::export
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     wheel_r_.name, hardware_interface::HW_IF_VELOCITY, &wheel_r_.vel));
 
+  // IMU State Interface
+  // state_interfaces.emplace_back(hardware_interface::StateInterface(
+  //   info_.sensors[0].name, info_.sensors[0].state_interfaces[0].name, &imu_quaternion_[0]));
+  
   return state_interfaces;
 }
 
