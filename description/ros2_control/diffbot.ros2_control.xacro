@@ -16,6 +16,9 @@
         <param name="timeout_ms">1000</param>
         <param name="left_wheel_id">3</param>
         <param name="right_wheel_id">4</param>
+        <!--  -->
+        <param name="imu_device">/dev/serial/by-id/usb-Arduino_Seeed_XIAO_nRF52840_Sense_D1CD2B3275EB486A-if00</param>
+        <param name="imu_baud_rate">57600</param>
       </hardware>
       <!-- Wheel Interfaces -->
       <joint name="${prefix}left_wheel_joint">

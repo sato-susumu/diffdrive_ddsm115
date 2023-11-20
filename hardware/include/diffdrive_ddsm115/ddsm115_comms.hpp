@@ -156,7 +156,7 @@ class DDSM115Comms
                     return checkCRC(responseBuffer);
                 }
             } catch (const std::exception& e) {
-                std::cerr << "Error while reading: " << e.what() << std::endl;
+                // std::cerr << "Error while reading: " << e.what() << std::endl;
                 return false;
             }
         }

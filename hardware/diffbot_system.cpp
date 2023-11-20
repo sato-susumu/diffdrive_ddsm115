@@ -48,6 +48,8 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
   wheel_r_.setup(cfg_.right_wheel_name, cfg_.right_wheel_id);
 
   imu_.setup("imu", 1);
+  cfg_.imu_device = info_.hardware_parameters["imu_device"];
+  cfg_.imu_baud_rate = std::stoi(info_.hardware_parameters["imu_baud_rate"]);
 
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -101,13 +103,13 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_init(
 
   // ..
   // check Imu state interfaces
-  if (info_.sensors[0].state_interfaces.size() != 10)
-  {
-    RCLCPP_FATAL(
-      rclcpp::get_logger("UnitreeHardware"),
-      "Sensor[0] (should be IMU) has %zu state interfaces. 10 expected.", info_.sensors[0].state_interfaces.size());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+  // if (info_.sensors[0].state_interfaces.size() != 10)
+  // {
+  //   RCLCPP_FATAL(
+  //     rclcpp::get_logger("UnitreeHardware"),
+  //     "Sensor[0] (should be IMU) has %zu state interfaces. 10 expected.", info_.sensors[0].state_interfaces.size());
+  //   return hardware_interface::CallbackReturn::ERROR;
+  // }
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -127,8 +129,28 @@ std::vector<hardware_interface::StateInterface> DiffDriveDDSM115Hardware::export
     wheel_r_.name, hardware_interface::HW_IF_VELOCITY, &wheel_r_.vel));
 
   // IMU State Interface
-  // state_interfaces.emplace_back(hardware_interface::StateInterface(
-  //   info_.sensors[0].name, info_.sensors[0].state_interfaces[0].name, &imu_quaternion_[0]));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[0].name, &imu_.orientation_x));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[1].name, &imu_.orientation_y));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[2].name, &imu_.orientation_z));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[3].name, &imu_.orientation_w));
+  //
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[4].name, &imu_.angular_velocity_x));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[5].name, &imu_.angular_velocity_y));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[6].name, &imu_.angular_velocity_z));
+  //
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[7].name, &imu_.linear_acceleration_x));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[8].name, &imu_.linear_acceleration_y));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    info_.sensors[0].name, info_.sensors[0].state_interfaces[9].name, &imu_.linear_acceleration_z));
   
   return state_interfaces;
 }
@@ -155,6 +177,13 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_configure(
     commsDDSM_.disconnect();
   }
   commsDDSM_.connect(cfg_.device, cfg_.timeout_ms);
+
+  if (mcuComms_.connected())
+  {
+    mcuComms_.disconnect();
+  }
+  mcuComms_.connect(cfg_.imu_device, cfg_.imu_baud_rate, cfg_.timeout_ms);
+
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -167,6 +196,11 @@ hardware_interface::CallbackReturn DiffDriveDDSM115Hardware::on_cleanup(
   if (commsDDSM_.connected())
   {
     commsDDSM_.disconnect();
+  }
+
+  if (mcuComms_.connected())
+  {
+    mcuComms_.disconnect();
   }
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Successfully cleaned up!");
 
@@ -241,6 +275,14 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
   wheel_r_.vel = wheel_r_.rpm_to_rad_per_sec(wheel_vel);
   // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WR Position is: %f", wheel_r_.pos);
   // RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "WR Velocity is: %f", wheel_r_.vel);
+
+
+  if (!mcuComms_.connected())
+  {
+    return hardware_interface::return_type::ERROR;
+  }
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "IMU data: %s", mcuComms_.get_imu_all_data().c_str() );
+  // mcuComms_.get_imu_all_data();
 
 
   return hardware_interface::return_type::OK;

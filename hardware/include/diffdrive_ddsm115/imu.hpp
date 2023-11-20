@@ -11,6 +11,18 @@ class IMU
 
     std::string name = "";
     int id = 0;
+    double orientation_x = 0.0;
+    double orientation_y = 0.0;
+    double orientation_z = 0.0;
+    double orientation_w = 0.0;
+
+    double angular_velocity_x = 0.0;
+    double angular_velocity_y = 0.0;
+    double angular_velocity_z = 0.0;
+
+    double linear_acceleration_x = 0.0;
+    double linear_acceleration_y = 0.0;
+    double linear_acceleration_z = 0.0;
     
     double cmd = 0;
     double pos = 0;
