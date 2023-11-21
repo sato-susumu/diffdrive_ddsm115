@@ -65,7 +65,11 @@ diffbot_base_controller:
     angular.z.min_jerk: 0.0 # rad/s^3
 
 
+imu_broadcaster:
+  ros__parameters:
 
+    sensor_name: imu_sensor
+    frame_id: imu_link
 
 # joint_broad:
 #   ros__parameters:

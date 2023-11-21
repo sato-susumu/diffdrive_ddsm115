@@ -41,7 +41,15 @@ def generate_launch_description():
             executable="twist_mux",
             parameters=[twist_mux_params],
             remappings=[('/cmd_vel_out','/diffbot_base_controller/cmd_vel_unstamped')]
-        )
+    )
+
+    robot_localization_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[os.path.join(get_package_share_directory(package_name),'config', 'ekf.yaml'), {'use_sim_time': False}]
+    )
 
     
 
@@ -85,6 +93,19 @@ def generate_launch_description():
         )
     )
 
+    imu_broad_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["imu_broadcaster"],
+    )
+
+    delayed_imu_broad_spawner = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[imu_broad_spawner],
+        )
+    )
+
 
     # Code for delaying a node (I haven't tested how effective it is)
     # 
@@ -111,5 +132,7 @@ def generate_launch_description():
         twist_mux,
         delayed_controller_manager,
         delayed_diff_drive_spawner,
-        delayed_joint_broad_spawner
+        delayed_joint_broad_spawner,
+        delayed_imu_broad_spawner,
+        robot_localization_node,
     ])

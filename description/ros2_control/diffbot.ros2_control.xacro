@@ -19,6 +19,8 @@
         <!--  -->
         <param name="imu_device">/dev/serial/by-id/usb-Arduino_Seeed_XIAO_nRF52840_Sense_D1CD2B3275EB486A-if00</param>
         <param name="imu_baud_rate">57600</param>
+        <param name='sensor_name'>imu_sensor</param>
+        <param name='frame_id'>imu_link</param>
       </hardware>
       <!-- Wheel Interfaces -->
       <joint name="${prefix}left_wheel_joint">
@@ -33,7 +35,7 @@
       </joint>
 
       <!-- IMU Interfaces -->
-      <sensor name="${prefix}imu_joint">
+      <sensor name="imu_sensor">
         <!-- Quaternion Interfaces -->
         <state_interface name="orientation.x"/>
         <state_interface name="orientation.y"/>
@@ -47,7 +49,6 @@
         <state_interface name="linear_acceleration.x"/>
         <state_interface name="linear_acceleration.y"/>
         <state_interface name="linear_acceleration.z"/>
-        <param name="frame_id">imu_link</param>
       </sensor>
     </ros2_control>
   </xacro:unless>
