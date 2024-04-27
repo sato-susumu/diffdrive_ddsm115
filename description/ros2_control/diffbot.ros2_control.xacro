@@ -10,17 +10,14 @@
         <plugin>diffdrive_ddsm115/DiffDriveDDSM115Hardware</plugin>
         <param name="left_wheel_name">left_wheel_joint</param>
         <param name="right_wheel_name">right_wheel_joint</param>
-        <param name="device">/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ0288O8-if00-port0</param>
+        <!-- <param name="device">/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0019EP9-if00-port0</param> -->
         <!-- <param name="device">/dev/ttyUSB1</param> -->
+        <param name="device">/dev/ttyUSB0</param>
         <param name="baud_rate">115200</param>
         <param name="timeout_ms">1000</param>
-        <param name="left_wheel_id">3</param>
-        <param name="right_wheel_id">4</param>
+        <param name="left_wheel_id">1</param>
+        <param name="right_wheel_id">2</param>
         <!--  -->
-        <param name="imu_device">/dev/serial/by-id/usb-Arduino_Seeed_XIAO_nRF52840_Sense_D1CD2B3275EB486A-if00</param>
-        <param name="imu_baud_rate">57600</param>
-        <param name='sensor_name'>imu_sensor</param>
-        <param name='frame_id'>imu_link</param>
       </hardware>
       <!-- Wheel Interfaces -->
       <joint name="${prefix}left_wheel_joint">
@@ -33,23 +30,6 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
-
-      <!-- IMU Interfaces -->
-      <sensor name="imu_sensor">
-        <!-- Quaternion Interfaces -->
-        <state_interface name="orientation.x"/>
-        <state_interface name="orientation.y"/>
-        <state_interface name="orientation.z"/>
-        <state_interface name="orientation.w"/>
-        <!-- Gyro Interfaces -->
-        <state_interface name="angular_velocity.x"/>
-        <state_interface name="angular_velocity.y"/>
-        <state_interface name="angular_velocity.z"/>
-        <!-- Acceleromter Interfaces -->
-        <state_interface name="linear_acceleration.x"/>
-        <state_interface name="linear_acceleration.y"/>
-        <state_interface name="linear_acceleration.z"/>
-      </sensor>
     </ros2_control>
   </xacro:unless>
 

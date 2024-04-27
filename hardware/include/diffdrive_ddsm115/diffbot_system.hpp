@@ -34,8 +34,8 @@
 #include "diffdrive_ddsm115/wheel.hpp"
 #include "diffdrive_ddsm115/ddsm115_comms.hpp"
 
-#include "diffdrive_ddsm115/imu.hpp"
-#include "diffdrive_ddsm115/mcu_comms.hpp"
+//  #include "diffdrive_ddsm115/imu.hpp"
+//  #include "diffdrive_ddsm115/mcu_comms.hpp"
 
 
 namespace diffdrive_ddsm115
@@ -52,9 +52,9 @@ struct Config
   int timeout_ms = 0;
   int left_wheel_id = 0;
   int right_wheel_id = 2;
-  std::string imu_device = "";
-  int imu_baud_rate = 57600;
-  int imu_id = 1;
+//    std::string imu_device = "";
+//    int imu_baud_rate = 57600;
+//    int imu_id = 1;
 };
 
 
@@ -101,8 +101,8 @@ private:
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;
-  mcuComms mcuComms_;
-  IMU imu_;
+//    mcuComms mcuComms_;
+//    IMU imu_;
 };
 
 }  // namespace diffdrive_ddsm115

@@ -94,7 +94,7 @@ class DDSM115Comms
         return serial_conn_.IsOpen();
     }
 
-    void sendCommand(const std::vector<uint8_t>& msg_to_send, bool print_output = false, bool crc = true) 
+    void sendCommand(const std::vector<uint8_t>& msg_to_send, bool print_output = true, bool crc = true) 
     {
         // Calculate CRC and append it to the command
         std::vector<uint8_t> command = msg_to_send;
@@ -148,11 +148,12 @@ class DDSM115Comms
                 serial_conn_.ReadByte(responseByte, 25);
                 responseBuffer.push_back(responseByte);
                 _b++;
-
                 if (_b > 9) {
                     // Received all expected bytes
                     //parse(DDSM115_PROTOCOL_V1, responseBuffer);
                     //return true;
+// std::cout << "Received " << responseBuffer.size() << " bytes." << std::endl;
+// displayReceivedData(responseBuffer);
                     return checkCRC(responseBuffer);
                 }
             } catch (const std::exception& e) {
@@ -215,8 +216,8 @@ class DDSM115Comms
         }
 
         responseData.error = responseBuffer[8];
-        // std::cout << "Angle of motor " << responseData.angle << " degrees." << std::endl;
-        // std::cout << "Current of motor " << responseData.current << " amps." << std::endl;
+//        std::cout << "Angle of motor " << responseData.angle << " degrees." << std::endl;
+//        std::cout << "Current of motor " << responseData.current << " amps." << std::endl;
     }
 
     void set_ddsm115_mode(uint8_t motor_id, ddsm115_mode_t mode)
