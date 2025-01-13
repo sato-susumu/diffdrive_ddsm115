@@ -21,9 +21,9 @@
         </link>
 
         <joint name="imu_joint" type="fixed">
-        <parent link="chassis"/>
-        <child link="imu_link"/>
-        <origin xyz="0 0 0.1"/>
+            <parent link="base_link" />
+            <child link="imu_link" />
+            <origin xyz="0.08 0 0.17" />
         </joint>
 
         <gazebo reference="imu_link">
