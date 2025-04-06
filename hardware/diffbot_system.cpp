@@ -251,10 +251,26 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
     return hardware_interface::return_type::ERROR;
   }
 
-  commsDDSM_.get_ddsm115_mode(wheel_l_.id);
-  double wheel_pos = commsDDSM_.responseData.angle;
-  double wheel_vel = commsDDSM_.responseData.velocity;
-  
+  double wheel_pos = 0.0;
+  double wheel_vel = 0.0;
+  static double old_l_wheel_pos = 0.0;
+  static double old_l_wheel_vel = 0.0;
+  static double old_r_wheel_pos = 0.0;
+  static double old_r_wheel_vel = 0.0;
+
+  if (commsDDSM_.get_ddsm115_mode(wheel_l_.id))
+  {
+    // RCLCPP_ERROR(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Left wheel read successful (ID: %d).", wheel_l_.id);
+    wheel_pos = commsDDSM_.responseData.angle;
+    wheel_vel = commsDDSM_.responseData.velocity;
+    old_l_wheel_pos = wheel_pos;
+    old_l_wheel_vel = wheel_vel;
+  } else {
+    // RCLCPP_ERROR(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Failed to read or CRC error for left wheel (ID: %d).", wheel_l_.id);
+    // return hardware_interface::return_type::ERROR;]
+    wheel_pos = old_l_wheel_pos;
+    wheel_vel = old_l_wheel_vel;
+  }
 
 //  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "L Position Now (angle) is: %f", wheel_pos);
 //  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "L Position Now (rads) is: %f", wheel_l_.degrees_to_radians(wheel_pos) );
@@ -265,11 +281,19 @@ hardware_interface::return_type DiffDriveDDSM115Hardware::read(
 //  RCLCPP_INFO(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "L Accumulated (rads) is: %f", wheel_l_.pos_rads );
   wheel_l_.vel = wheel_l_.rpm_to_rad_per_sec(wheel_vel);
   
-
-  
-  commsDDSM_.get_ddsm115_mode(wheel_r_.id);
-  wheel_pos = commsDDSM_.responseData.angle;
-  wheel_vel = commsDDSM_.responseData.velocity;
+  if (commsDDSM_.get_ddsm115_mode(wheel_r_.id))
+  {
+    // RCLCPP_ERROR(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Right wheel read successful (ID: %d).", wheel_r_.id);
+    wheel_pos = commsDDSM_.responseData.angle;
+    wheel_vel = commsDDSM_.responseData.velocity;
+    old_r_wheel_pos = wheel_pos;
+    old_r_wheel_vel = wheel_vel;
+  } else {
+    // RCLCPP_ERROR(rclcpp::get_logger("DiffDriveDDSM115Hardware"), "Failed to read or CRC error for right wheel (ID: %d).", wheel_r_.id);
+    // return hardware_interface::return_type::ERROR;
+    wheel_pos = old_r_wheel_pos;
+    wheel_vel = old_r_wheel_vel;
+  }
 
   wheel_r_.pos_rads = wheel_r_.degrees_to_radians(-wheel_r_.calculate_accumulated_position(wheel_pos));
   wheel_r_.vel = wheel_r_.rpm_to_rad_per_sec(wheel_vel);
